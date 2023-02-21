@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"/>
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="css/style.css"/>
+    <script
+      src="https://code.jquery.com/jquery-3.6.3.min.js"
+      integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+      crossorigin="anonymous"
+    ></script>
+    <script defer src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+    <script defer src="js/cryptoparagraph.js"></script>
+    <script defer src="js/cryptodisplay.js"></script>
+    <script defer src="js/cryptoapp.js"></script>
+    
+
+    <title>crypto project</title>
+</head>
+<body>
+    <div class="container-fluid webTitle animate__animated animate__fadeInDown">
+      <img src="imgs/coin1.png" width="130px" class="float-end"/>
+        <h1>Cryptonite</h1>
+    </div>
+    <nav class="navbar navbar-expand-sm">
+        <div class="container">
+            <ul class="nav nav-pills navbar-collapse">
+              <li class="nav-item">
+                <a class="nav-link active" id="homePage" data-bs-toggle="pill" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="liveReportsPage" data-bs-toggle="pill" href="#">Live Reports</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="aboutPage" data-bs-toggle="pill" href="#">About</a>
+              </li>
+            </ul>
+            <form class="d-flex">
+              <input class="form-control me-2" type="search" placeholder="Search for a coin.." id="searchInput"/>
+              <button class="btn btn-outline-success" id="searchBtn" onclick="search()" type="button">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+  <div class="container">
+    <div id="loading"></div>
+    <!-- <button id="prev" class="btn btn-secondary cardsPage float-start">prev</button>
+    <button id="next" class="btn btn-secondary cardsPage float-end">next</button> -->
+    <span id="pages"></span>
+    <div class="coinsPage d-flex flex-wrap" id="cryptoCards"></div>
+      <div class="about row">
+      <h2>About the Project</h2>
+    </div>
+    <div class="liveReports row">
+      <h2>Live Reports</h2>
+    <div class="container chart">
+      <div id="chart" style="height:300px; width:100%;"></div>
+    </div>
+      </div>
+  </div>
+  <div class="modal fade" id="myModal"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">You can only choose 5  crypto coin </h5>
+            </div>
+            <div class="modal-body">
+                <h6>Please uncheck a coin, or cancel </h6>
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-close" data-bs-dismiss="modal" >Close</button>
+                <button type="button" class="btn btn-primary save-btn" data-bs-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+  </div>
+</body>
+</html>
