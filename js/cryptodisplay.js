@@ -1,10 +1,10 @@
-const loadOn = () => {
-    $("").show();
-};
+const loadCoinsPageOn = () => {};
 
-const loadOff = () => {
-    $("").hide();
-};
+const loadCoinsPageOff = () => {};
+
+const loadOnMoreInfo = () => {};
+
+const loadOffMoreInfo = () => {};
 
 $(".liveReports").hide();
 $(".about").hide();
@@ -13,30 +13,23 @@ $("#homePage").on("click", () =>{
     $(".coinsPage").slideDown();
     $(".liveReports").hide();
     $(".about").hide();
-    $("").hide();
-    clearInterval();
+    $("#searchInput").show();
+    clearInterval(liveReportsInterval)
 })
 
 $("#liveReportsPage").on("click", () =>{
     $(".liveReports").slideDown();
     $(".coinsPage").hide();
     $(".about").hide();
-    $("").hide();
-    createChart();
+    console.log($(".about"));
+    $("#searchInput").hide();
 })
 
 $("#aboutPage").on("click", () =>{
     $(".about").slideDown();
     $(".coinsPage").hide();
     $(".liveReports").hide();
-    $("").hide();
-    clearInterval();
+    $("#searchInput").hide();
+    clearInterval(liveReportsInterval)
 })
 
-$("#searchInput").on("input", (e) =>{
-    const value = e.target.value;
-    cryptoCard.forEach(item =>{
-        const isVisible = item.id.includes(value) || item.symbol.includes(value)
-        item.element.classList.toggle("hide", !isVisible)
-    })
-});

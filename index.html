@@ -13,8 +13,9 @@
       integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
       crossorigin="anonymous"
     ></script>
+    <script src="https://cdn.jsdelivr.net/parallax.js/1.4.2/parallax.min.js"></script>
     <script defer src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
-    <script defer src="js/cryptoparagraph.js"></script>
+    <script defer src="js/cryptochart.js"></script>
     <script defer src="js/cryptodisplay.js"></script>
     <script defer src="js/cryptoapp.js"></script>
     
@@ -26,55 +27,68 @@
       <img src="imgs/coin1.png" width="130px" class="float-end"/>
         <h1>Cryptonite</h1>
     </div>
+    
     <nav class="navbar navbar-expand-sm">
-        <div class="container">
-            <ul class="nav nav-pills navbar-collapse">
-              <li class="nav-item">
-                <a class="nav-link active" id="homePage" data-bs-toggle="pill" href="#">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="liveReportsPage" data-bs-toggle="pill" href="#">Live Reports</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="aboutPage" data-bs-toggle="pill" href="#">About</a>
-              </li>
+      <div class="container">
+          <ul class="nav nav-pills navbar-collapse">
+            <li class="nav-item">
+              <a class="nav-link active" id="homePage" data-bs-toggle="pill" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="liveReportsPage" onclick="displayLiveChart()" data-bs-toggle="pill" href="#">Live Reports</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="aboutPage" data-bs-toggle="pill" href="#">About</a>
+            </li>
             </ul>
             <form class="d-flex">
               <input class="form-control me-2" type="search" placeholder="Search for a coin.." id="searchInput"/>
-              <button class="btn btn-outline-success" id="searchBtn" onclick="search()" type="button">Search</button>
             </form>
           </div>
         </div>
       </nav>
+
   <div class="container">
-    <div id="loading"></div>
-    <!-- <button id="prev" class="btn btn-secondary cardsPage float-start">prev</button>
-    <button id="next" class="btn btn-secondary cardsPage float-end">next</button> -->
-    <span id="pages"></span>
-    <div class="coinsPage d-flex flex-wrap" id="cryptoCards"></div>
-      <div class="about row">
-      <h2>About the Project</h2>
-    </div>
-    <div class="liveReports row">
-      <h2>Live Reports</h2>
-    <div class="container chart">
-      <div id="chart" style="height:300px; width:100%;"></div>
-    </div>
+    <div class="coinsPage animate__animated animate__fadeIn">
+      <div id="paging"></div>
+      <div class="d-sm-flex flex-wrap" id="cryptoCards">
       </div>
+    </div>
+
+    <div class="about">
+      <div>
+        <img src="/imgs/me.jpg" class="rounded-circle" alt="anton" width="150px">
+      </div>
+      <div>
+        <h4>My name is Anton Lokianov</h4>
+        <div class="aboutText">
+        this is my second project in FullStack Web developer at "john bryce academy"
+        </div>
+      </div>
+    </div>
+
+    <div class="liveReports container-fluid">
+      <h2>Live Reports</h2>
+      <div class="chart">
+        <div class="chartsPage">
+          <div id="coinsChart"></div>
+        </div>
+      </div>
+    </div>
   </div>
+
   <div class="modal fade" id="myModal"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">You can only choose 5  crypto coin </h5>
+                <h5 class="modal-title" id="exampleModalLabel">You can only compare up to 5 coins. Current list:</h5>
             </div>
             <div class="modal-body">
-                <h6>Please uncheck a coin, or cancel </h6>
                
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-close" data-bs-dismiss="modal" >Close</button>
-                <button type="button" class="btn btn-primary save-btn" data-bs-dismiss="modal">Save changes</button>
+                <button type="button" class="btn btn-success" onclick="replaceCoin()" data-bs-dismiss="modal">Replace</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelReplacing()" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
