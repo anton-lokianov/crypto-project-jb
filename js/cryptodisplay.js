@@ -6,6 +6,7 @@ const loadOnMoreInfo = () => {};
 
 const loadOffMoreInfo = () => {};
 
+
 $(".liveReports").hide();
 $(".about").hide();
 
@@ -14,22 +15,23 @@ $("#homePage").on("click", () =>{
     $(".liveReports").hide();
     $(".about").hide();
     $("#searchInput").show();
-    clearInterval(liveReportsInterval)
-})
+    clearInterval(liveReportsInterval);
+    window.location.hash = "#Home";
+});
 
 $("#liveReportsPage").on("click", () =>{
     $(".liveReports").slideDown();
     $(".coinsPage").hide();
     $(".about").hide();
-    console.log($(".about"));
     $("#searchInput").hide();
-})
+    window.location.hash = "#LiveReport";
+});
 
 $("#aboutPage").on("click", () =>{
     $(".about").slideDown();
     $(".coinsPage").hide();
     $(".liveReports").hide();
     $("#searchInput").hide();
-    clearInterval(liveReportsInterval)
-})
-
+    clearInterval(liveReportsInterval);
+    window.location.hash = "#About";
+});

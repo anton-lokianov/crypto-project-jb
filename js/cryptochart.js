@@ -91,7 +91,7 @@ const displayLiveChart = async () => {
     clearInterval(liveReportsInterval);
   }
   saveCryptoLinkHashCode(cryptoLink);
-  liveReportsInterval = setInterval(displayLiveChart, 5000);
+  liveReportsInterval = setInterval(displayLiveChart, 2000);
 };
 function locationHashChanged() {
   console.log(location.hash)

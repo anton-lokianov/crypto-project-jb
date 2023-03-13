@@ -9,6 +9,7 @@ let compareList = [];
 let cards = [];
 const perPage = 20;
 let currentPage = 0;
+const cache = new Map();
 
 $(async () =>{
   try{
@@ -17,9 +18,7 @@ $(async () =>{
     // loading off
     createPaging();
     paging(0);
-
     $("#searchInput").on("input", searchInCryptoCards);
-    // createCardData();
   }
   catch(e){
     console.error("Error loading");
@@ -29,18 +28,35 @@ $(async () =>{
 
 const getMoreCurrencyInfo = async (id, collapseCardId) => {
   try {
+    if (cache.has(id)) {
+      const cachedData = cache.get(id);
+      updateCollapseCard(collapseCardId, cachedData);
+      return;
+    }
     loadOnMoreInfo()
     const coinInfo = await $.get(cardInfoUrl + id);
     loadOffMoreInfo()
-    const collapseCard = $("#" + collapseCardId);
-    collapseCard.find("img").attr("src", coinInfo.image.small);
-    collapseCard.find(".usdValue").html(coinInfo.market_data.current_price.usd);
-    collapseCard.find(".eurValue").html(coinInfo.market_data.current_price.eur);
-    collapseCard.find(".ilsValue").html(coinInfo.market_data.current_price.ils);
+    updateCollapseCard(collapseCardId, coinInfo);
+
+
+    cache.set(id, coinInfo);
+    setTimeout(() => {
+      cache.delete(id);
+    }, 2 * 60 * 1000);
+
   } catch (error) {
     console.error(error);
   }
 };
+
+const updateCollapseCard = (collapseCardId, coinInfo) => {
+  const collapseCard = $("#" + collapseCardId);
+  collapseCard.find("img").attr("src", coinInfo.image.small);
+  collapseCard.find(".usdValue").html(coinInfo.market_data.current_price.usd);
+  collapseCard.find(".eurValue").html(coinInfo.market_data.current_price.eur);
+  collapseCard.find(".ilsValue").html(coinInfo.market_data.current_price.ils);
+};
+
 
 
 const addToCompareList = (coinSymbol, coinId, checkBox) => {
@@ -104,22 +120,15 @@ const searchInCryptoCards = ()=>{
 
 
 const paging = (index, context) =>{
-  console.log(context)
   if (context){
     $(".page-index."+currentPage).removeClass("active");
     context.classList.add("active");
   }
   index = parseInt(index);
   currentPage = index;
-  // HOW SLICE calculates pages
-  // INDEX | FROM | TO
-  // 0     | 0    | 4
-  // 1     | 4    | 8
-  // 2     | 8    | 12
   const slicedCryptoCards = JSON.parse(JSON.stringify(cryptoCard.slice(index*perPage, index*perPage+perPage)))
   console.log(slicedCryptoCards);
   createCardData(slicedCryptoCards);
-  // cryptoCard = slicedCryptoCards
 }
 
 

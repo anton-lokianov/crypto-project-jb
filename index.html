@@ -13,7 +13,7 @@
       integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
       crossorigin="anonymous"
     ></script>
-    <script src="https://cdn.jsdelivr.net/parallax.js/1.4.2/parallax.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/parallax.js/1.4.2/parallax.min.js"></script>
     <script defer src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
     <script defer src="js/cryptochart.js"></script>
     <script defer src="js/cryptodisplay.js"></script>
@@ -24,7 +24,6 @@
 </head>
 <body>
     <div class="container-fluid webTitle animate__animated animate__fadeInDown">
-      <img src="imgs/coin1.png" width="130px" class="float-end"/>
         <h1>Cryptonite</h1>
     </div>
     
@@ -32,13 +31,13 @@
       <div class="container">
           <ul class="nav nav-pills navbar-collapse">
             <li class="nav-item">
-              <a class="nav-link active" id="homePage" data-bs-toggle="pill" href="#">Home</a>
+              <a class="nav-link active" id="homePage" data-bs-toggle="pill" href="#homeDiv">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" id="liveReportsPage" onclick="displayLiveChart()" data-bs-toggle="pill" href="#">Live Reports</a>
+              <a class="nav-link" id="liveReportsPage" onclick="displayLiveChart()" data-bs-toggle="pill" href="#liveReportDiv">Live Reports</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" id="aboutPage" data-bs-toggle="pill" href="#">About</a>
+              <a class="nav-link" id="aboutPage" data-bs-toggle="pill" href="#aboutDiv">About</a>
             </li>
             </ul>
             <form class="d-flex">
@@ -47,27 +46,31 @@
           </div>
         </div>
       </nav>
+      <div class="d-flex flex-wrap titleCoinImg justify-content-center">
+        <img src="imgs/coin1.png" width="130px"/>
+      </div>
 
   <div class="container">
-    <div class="coinsPage animate__animated animate__fadeIn">
-      <div id="paging"></div>
-      <div class="d-sm-flex flex-wrap" id="cryptoCards">
+    <div class="coinsPage animate__animated animate__fadeIn" id="homeDiv">
+      <div id="paging">pages: </div>
+      <div class="d-sm-flex flex-wrap justify-content-center" id="cryptoCards">
       </div>
     </div>
 
-    <div class="about">
+    <div class="about page" id="aboutDiv">
       <div>
         <img src="/imgs/me.jpg" class="rounded-circle" alt="anton" width="150px">
       </div>
       <div>
         <h4>My name is Anton Lokianov</h4>
         <div class="aboutText">
+        <h4>about the project</h4>
         this is my second project in FullStack Web developer at "john bryce academy"
         </div>
       </div>
     </div>
 
-    <div class="liveReports container-fluid">
+    <div class="liveReports page" id="liveReportDiv">
       <h2>Live Reports</h2>
       <div class="chart">
         <div class="chartsPage">
