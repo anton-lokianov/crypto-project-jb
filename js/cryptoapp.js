@@ -29,17 +29,19 @@ $(async () =>{
 const getMoreCurrencyInfo = async (id, collapseCardId) => {
   try {
     if (cache.has(id)) {
-      const cachedData = cache.get(id);
+      const cachedData = JSON.parse(cache.get(id));
       updateCollapseCard(collapseCardId, cachedData);
       return;
     }
-    loadOnMoreInfo()
+    const spinner = $('#' + collapseCardId).find('.spinner-border');
+    const cryptoMoreInfo = $('#' + collapseCardId).find('.cryptoMoreInfo');
+    cryptoMoreInfo.hide();
+    spinner.show(); // show spinner
     const coinInfo = await $.get(cardInfoUrl + id);
-    loadOffMoreInfo()
+    spinner.hide(); // hide spinner
+    cryptoMoreInfo.show();
     updateCollapseCard(collapseCardId, coinInfo);
-
-
-    cache.set(id, coinInfo);
+    cache.set(id, JSON.stringify(coinInfo));
     setTimeout(() => {
       cache.delete(id);
     }, 2 * 60 * 1000);
@@ -106,26 +108,37 @@ const uncheckCoin = (target) =>{
 }
 
 
-const searchInCryptoCards = ()=>{
-  const searchTerm = $("#searchInput").val().toLowerCase();
-  if(searchTerm != ""){
-    let matchId = new RegExp(searchTerm,'g')
-    let searchResult = cryptoCard.filter(item => matchId.test(item.id) || matchId.test(item.symbol));
-    console.log(searchResult)
-    createCardData(searchResult);
+const searchInCryptoCards = () => {
+  const searchTerm = $('#searchInput').val().toLowerCase();
+  if (searchTerm === '') {
+    paging(currentPage);
     return;
   }
-  paging(currentPage);
-}
+  const searchResult = cryptoCard.filter(
+    item =>
+      item.id.toLowerCase().includes(searchTerm) ||
+      item.symbol.toLowerCase().includes(searchTerm)
+  );
+  createCardData(searchResult);
+};
 
 
-const paging = (index, context) =>{
-  if (context){
-    $(".page-index."+currentPage).removeClass("active");
+
+const paging = (index, context) => {
+  if (context !== undefined) {
+    const $currentPage = $(".page-index." + currentPage);
+    $currentPage.removeClass("active");
     context.classList.add("active");
   }
+
   index = parseInt(index);
   currentPage = index;
+
+  const startIndex = index * perPage;
+  const endIndex = startIndex + perPage;
+  if (startIndex < 0 || endIndex > cryptoCard.length) {
+    return;
+  }
   const slicedCryptoCards = JSON.parse(JSON.stringify(cryptoCard.slice(index*perPage, index*perPage+perPage)))
   console.log(slicedCryptoCards);
   createCardData(slicedCryptoCards);
@@ -195,22 +208,26 @@ const createCardData = (slicedCryptoCards) => {
 };
 
 
-const getMoreCurrencyInfoCollapse =  () => {
+const getMoreCurrencyInfoCollapse = () => {
   const cardCollapse = `
-  <div class="cardCollapse"</div>
-    <div class="cryptoMoreInfo">
-      <img src="" class="coinImg">
+    <div class="cardCollapse">
+      <div class="cardCollapseWrap">
+        <div class="spinner-border text-primary" style="display: block;"></div>
+        <div class="cryptoMoreInfo">
+          <img src="" class="coinImg">
+        </div>
+        <div class="cryptoMoreInfo">
+          USD $: <span class="usdValue"></span>
+        </div>
+        <div class="cryptoMoreInfo">
+          EUR €: <span class="eurValue"></span>
+        </div>
+        <div class="cryptoMoreInfo">
+          ILS ₪: <span class="ilsValue"></span>
+        </div>
+      </div>
     </div>
-    <div class="cryptoMoreInfo">
-      USD $: <span class="usdValue"></span>
-    </div>
-    <div class="cryptoMoreInfo">
-      EUR €: <span class="eurValue"></span>
-    </div>
-    <div class="cryptoMoreInfo">
-      ILS ₪: <span class="ilsValue"></span>
-    </div>
-`;
+  `;
   $(".collapse").html(cardCollapse);
 }
 

@@ -35,3 +35,10 @@ $("#aboutPage").on("click", () =>{
     clearInterval(liveReportsInterval);
     window.location.hash = "/About";
 });
+
+
+$(window).scroll(() => {
+    var scrollTop = $(this).scrollTop();
+    $('.webTitle').css('background-position', 'center ' + scrollTop / 1 + 'px');
+  });
+  
