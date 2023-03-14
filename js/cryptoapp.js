@@ -142,6 +142,7 @@ const createPaging = () =>{
       `;
       $("#paging").append(pageNumber);
   }
+  paging(0, $(".page-index")[0]);
 };
 
 
@@ -151,6 +152,7 @@ const createCardData = (slicedCryptoCards) => {
   console.log(cryptoCard.slice(0, perPage));
   slicedCryptoCards.map((card, index) => {
     const id = `cardExtendedInfo${index}`;
+    const isChecked = compareList.some(coin => coin.coinId === card.id);
     const cardHtml = `
       <div class="cards">
         <div class="card" style="width: 300px">
@@ -159,7 +161,8 @@ const createCardData = (slicedCryptoCards) => {
               <input type="checkbox" class="toggle" 
                 id="toggle${card.id}" 
                 onclick="addToCompareList('${card.symbol}', '${card.id}', this)" 
-                data-card-inp=${card.id}>
+                data-card-inp=${card.id}
+                ${isChecked ? 'checked' : ''}>
               <span class="slider round"></span>
             </label>
             <h4 class="card-title">${card.symbol}</h4>

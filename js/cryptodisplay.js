@@ -16,7 +16,7 @@ $("#homePage").on("click", () =>{
     $(".about").hide();
     $("#searchInput").show();
     clearInterval(liveReportsInterval);
-    window.location.hash = "#Home";
+    window.location.hash = "/Home";
 });
 
 $("#liveReportsPage").on("click", () =>{
@@ -24,7 +24,7 @@ $("#liveReportsPage").on("click", () =>{
     $(".coinsPage").hide();
     $(".about").hide();
     $("#searchInput").hide();
-    window.location.hash = "#LiveReport";
+    window.location.hash = "/LiveReport";
 });
 
 $("#aboutPage").on("click", () =>{
@@ -33,5 +33,5 @@ $("#aboutPage").on("click", () =>{
     $(".liveReports").hide();
     $("#searchInput").hide();
     clearInterval(liveReportsInterval);
-    window.location.hash = "#About";
+    window.location.hash = "/About";
 });
