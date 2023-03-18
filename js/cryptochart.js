@@ -1,37 +1,43 @@
+// Define variables
 let chartsData = [];
 let liveReportsInterval;
 let chart;
 
-const cryptoLinkHashCode = (s) =>{
-  return s.split("").reduce(function(a, b) {
-    a = a+b.charCodeAt(0);
+// Calculate hash code for a string
+const cryptoLinkHashCode = (s) => {
+  return s.split("").reduce(function (a, b) {
+    a = a + b.charCodeAt(0);
     return a & a;
   }, 0);
 }
 
+// Save hash code of a crypto link in session storage
 const saveCryptoLinkHashCode = (cryptoLink) => {
-  sessionStorage.setItem("cryptoLinkHashCode",cryptoLinkHashCode(cryptoLink))
+  sessionStorage.setItem("cryptoLinkHashCode", cryptoLinkHashCode(cryptoLink));
 }
 
+// Compare hash codes of a crypto link with the one stored in session storage
 const compareCryptoLinksHashCodes = (cryptoLink) => {
   const newCryptoLinkHashCode = cryptoLinkHashCode(cryptoLink);
-  return sessionStorage.getItem("cryptoLinkHashCode") 
-  && newCryptoLinkHashCode === parseInt(sessionStorage.getItem("cryptoLinkHashCode"));
+  return sessionStorage.getItem("cryptoLinkHashCode") && newCryptoLinkHashCode === parseInt(sessionStorage.getItem("cryptoLinkHashCode"));
 }
 
+// Display live chart for selected coins
 const displayLiveChart = async () => {
-
+  // Check if there are coins to compare
   if (!compareList || compareList.length === 0) {
-    chart? chart.destroy():()=>{};
+    chart ? chart.destroy() : () => {};
     chart = null;
     return;
   }
-  // TODO:start progress bar
+  
   const uriParameters = compareList.map((item) => item.coinSymbol).join(",");
   const cryptoLink = cryptoCurrencyLiveDataUrl.replace("%s", uriParameters).replace("%a", "USD,EUR");
   const compareResult = compareCryptoLinksHashCodes(cryptoLink);
+  $('.loading-spinner').show();
   const liveReport = await $.get(cryptoLink);
-  // TODO: end progress bar
+  $('.loading-spinner').hide();
+ 
   const coinsRawData = liveReport.RAW;
   const date = new Date();
   if (compareResult && chartsData.length > 0) {
@@ -68,6 +74,8 @@ const displayLiveChart = async () => {
       },
       axisX: {
         title: "Time",
+        valueFormatString: "HH:mm:ss",
+        labelAngle: -50
       },
       axisY: {
         title: "Coin Value",
@@ -93,6 +101,7 @@ const displayLiveChart = async () => {
   saveCryptoLinkHashCode(cryptoLink);
   liveReportsInterval = setInterval(displayLiveChart, 2000);
 };
+
 function locationHashChanged() {
   console.log(location.hash)
 }
@@ -100,6 +109,3 @@ function locationHashChanged() {
 window.addEventListener('hashchange', () => {
   console.log('The hash has changed!')
 }, false);
-
-
-

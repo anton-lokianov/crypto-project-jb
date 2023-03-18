@@ -1,17 +1,8 @@
-const loadCoinsPageOn = () => {};
-
-const loadCoinsPageOff = () => {};
-
-const loadOnMoreInfo = () => {};
-
-const loadOffMoreInfo = () => {};
-
-
 $(".liveReports").hide();
 $(".about").hide();
 
 $("#homePage").on("click", () =>{
-    $(".coinsPage").slideDown();
+    $(".coinsPage").show();
     $(".liveReports").hide();
     $(".about").hide();
     $("#searchInput").show();
@@ -20,7 +11,7 @@ $("#homePage").on("click", () =>{
 });
 
 $("#liveReportsPage").on("click", () =>{
-    $(".liveReports").slideDown();
+    $(".liveReports").css({display:"flex"});
     $(".coinsPage").hide();
     $(".about").hide();
     $("#searchInput").hide();
@@ -28,7 +19,7 @@ $("#liveReportsPage").on("click", () =>{
 });
 
 $("#aboutPage").on("click", () =>{
-    $(".about").slideDown();
+    $(".about").css({display:"flex"});
     $(".coinsPage").hide();
     $(".liveReports").hide();
     $("#searchInput").hide();
@@ -37,8 +28,9 @@ $("#aboutPage").on("click", () =>{
 });
 
 
+$('.webTitle').css('background-position', 'center ' + $(this).scrollTop()/2 + 'px');
 $(window).scroll(() => {
-    var scrollTop = $(this).scrollTop();
-    $('.webTitle').css('background-position', 'center ' + scrollTop / 1 + 'px');
+    let scrollTop = $(this).scrollTop();
+    $('.webTitle').css('background-position', 'center ' + scrollTop / 2 + 'px');
   });
   

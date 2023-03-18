@@ -9,43 +9,68 @@ let compareList = [];
 let cards = [];
 const perPage = 20;
 let currentPage = 0;
-const cache = new Map();
+let cacheStorage = null;
+
+const setCachedData = async (cacheId, coinInfo) =>{
+  if(!cacheStorage){
+    cacheStorage = await caches.open("cryptoInfo");
+  }
+  coinInfo.timestamp = Date.now();
+  await cacheStorage.put(cacheId, new Response(JSON.stringify(coinInfo)));
+}
+
+const getCachedData = async (cacheId) =>{
+  if(!cacheStorage){
+    cacheStorage = await caches.open("cryptoInfo");
+  }
+
+  const coinInfo = await cacheStorage.match(cacheId);
+  if(!coinInfo){
+    return null;
+  }
+  coinInfoJson = await coinInfo.json();
+  const timeElapsed = (Date.now() - coinInfoJson.timestamp) / 1000;
+  console.log(cacheId+" found in cache. So using it. It was Created ", timeElapsed, "seconds ago")
+  if (timeElapsed > 120){
+    console.log("Deleting coin info", coinInfoJson.symbol)
+    cache.delete(coinInfoJson);
+    coinInfoJson = null;
+  }
+  return coinInfoJson;
+}
 
 $(async () =>{
   try{
-    // loading on
+    $('.loading-spinner').show();
     cryptoCard = await $.get(cryptoCurrencyUrl);
-    // loading off
     createPaging();
     paging(0);
+    $('.loading-spinner').hide();
     $("#searchInput").on("input", searchInCryptoCards);
   }
   catch(e){
-    console.error("Error loading");
+    $('.loading-spinner').hide();
+    console.error(e,"Error loading");
   }
 });
 
 
 const getMoreCurrencyInfo = async (id, collapseCardId) => {
   try {
-    if (cache.has(id)) {
-      const cachedData = JSON.parse(cache.get(id));
-      updateCollapseCard(collapseCardId, cachedData);
-      return;
-    }
     const spinner = $('#' + collapseCardId).find('.spinner-border');
     const cryptoMoreInfo = $('#' + collapseCardId).find('.cryptoMoreInfo');
     cryptoMoreInfo.hide();
-    spinner.show(); // show spinner
-    const coinInfo = await $.get(cardInfoUrl + id);
-    spinner.hide(); // hide spinner
+    spinner.show(); 
+    let coinInfo = await getCachedData(id);
+    if (!coinInfo){
+      console.log("Not found in cache, so retrieving it from remote");
+      coinInfo = await $.get(cardInfoUrl + id);
+      setCachedData(id, coinInfo);
+    }
+
+    spinner.hide();
     cryptoMoreInfo.show();
     updateCollapseCard(collapseCardId, coinInfo);
-    cache.set(id, JSON.stringify(coinInfo));
-    setTimeout(() => {
-      cache.delete(id);
-    }, 2 * 60 * 1000);
-
   } catch (error) {
     console.error(error);
   }
@@ -139,8 +164,7 @@ const paging = (index, context) => {
   if (startIndex < 0 || endIndex > cryptoCard.length) {
     return;
   }
-  const slicedCryptoCards = JSON.parse(JSON.stringify(cryptoCard.slice(index*perPage, index*perPage+perPage)))
-  console.log(slicedCryptoCards);
+  const slicedCryptoCards = JSON.parse(JSON.stringify(cryptoCard.slice(startIndex, endIndex)))
   createCardData(slicedCryptoCards);
 }
 
@@ -162,7 +186,6 @@ const createPaging = () =>{
 const createCardData = (slicedCryptoCards) => {
   $("#cryptoCards").html("");
   const cardData = [];
-  console.log(cryptoCard.slice(0, perPage));
   slicedCryptoCards.map((card, index) => {
     const id = `cardExtendedInfo${index}`;
     const isChecked = compareList.some(coin => coin.coinId === card.id);
@@ -209,7 +232,7 @@ const createCardData = (slicedCryptoCards) => {
 
 
 const getMoreCurrencyInfoCollapse = () => {
-  const cardCollapse = `
+  return `
     <div class="cardCollapse">
       <div class="cardCollapseWrap">
         <div class="spinner-border text-primary" style="display: block;"></div>
@@ -228,7 +251,6 @@ const getMoreCurrencyInfoCollapse = () => {
       </div>
     </div>
   `;
-  $(".collapse").html(cardCollapse);
 }
 
 

@@ -2,10 +2,42 @@ body{
     background-color: whitesmoke;
 }
 
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: whitesmoke;
+  box-shadow: 0 2px 20px;
+}
+
+.container {
+  display: flex;
+  min-height: 60vh;
+  margin: 0 auto 50px;
+  justify-content: center;
+}
+
+.loading-spinner {
+  top: 30%;
+  left: 50%;
+  z-index: 9;
+  width: 100px;
+  height: 100px;
+  display: block;
+  position: fixed;
+  margin-left: -50px;
+  background: rgba(255,255,255,0.9);
+}
+
+.navbar .container {
+  margin: 5px auto;
+  min-height: auto;
+}
+
 .webTitle {
     background-image: url("../imgs/background.jpg");
     border-bottom: #C5B358 solid 2px;
-    height: 60vh; 
+    height: 58vh; 
 }
 
 h1{
@@ -14,10 +46,6 @@ h1{
     padding: 5rem;
     justify-content: center;
     font-size: 60px;
-}
-
-.container{
-    margin-top: 20px;
 }
 
 /* The switch - the box around the slider */
@@ -89,18 +117,18 @@ h1{
 }
 
 .liveReports{
+  display: none;
+  justify-content: center;
   text-align: center;
   margin-bottom: 100px;
 }
 
-.chartsPage{
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 2rem;
-}
-
 #cryptoCards{
   gap: 15px;
+}
+
+.titleCoinImg  {
+  margin: 25px;
 }
 
 .modal-header{
@@ -142,16 +170,12 @@ h1{
 }
 
 .aboutText{
-  border-radius: 20px;
-  border: 1px solid black;
-  background-color: #bcc0c4;
-  width: 500px;
+  max-width: 500px;
   font-size: 20px;
   padding: 10px;
 }
 
 .aboutText h4{
-  color: whitesmoke;
   text-align: center;
   padding-bottom: 10px;
 }
@@ -161,8 +185,12 @@ h1{
 }
 
 .about{
-  display: flex;
+  display: none;
   flex-wrap: wrap;
+  border: 1px solid black;
+  box-shadow: 0 13px 13px;
+  padding: 10px;
+  height: fit-content;
 }
 
 #paging{
@@ -192,3 +220,4 @@ h1{
   background: #0d6efd;
   color: #fff;
 }
+
