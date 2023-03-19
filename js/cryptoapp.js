@@ -2,7 +2,7 @@ const cardInfoUrl = "https://api.coingecko.com/api/v3/coins/";
 const priceInfoUrl = "https://www.cryptocompare.com/api/#-api-data-price-";
 const cryptoCurrencyUrl = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=USD";
 const cryptoCurrencyLiveDataUrl = "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=%s&tsyms=%a"
-
+// Initialize variables
 let cryptoCard = [];
 const uncheckCandidates = [];
 let compareList = [];
@@ -11,14 +11,17 @@ const perPage = 20;
 let currentPage = 0;
 let cacheStorage = null;
 
+// Function to store data in cache
 const setCachedData = async (cacheId, coinInfo) =>{
   if(!cacheStorage){
     cacheStorage = await caches.open("cryptoInfo");
   }
+  // Add timestamp to the coinInfo object before storing in cache
   coinInfo.timestamp = Date.now();
   await cacheStorage.put(cacheId, new Response(JSON.stringify(coinInfo)));
 }
 
+// Function to retrieve data from cache
 const getCachedData = async (cacheId) =>{
   if(!cacheStorage){
     cacheStorage = await caches.open("cryptoInfo");
@@ -28,12 +31,13 @@ const getCachedData = async (cacheId) =>{
   if(!coinInfo){
     return null;
   }
-  coinInfoJson = await coinInfo.json();
+  
+  // Parse the cached data and calculate the time elapsed since it was cached
+  const coinInfoJson = await coinInfo.json();
   const timeElapsed = (Date.now() - coinInfoJson.timestamp) / 1000;
-  console.log(cacheId+" found in cache. So using it. It was Created ", timeElapsed, "seconds ago")
   if (timeElapsed > 120){
-    console.log("Deleting coin info", coinInfoJson.symbol)
-    cache.delete(coinInfoJson);
+    // Delete the cached data if it has been more than 120 seconds
+    cacheStorage.delete(coinInfoJson);
     coinInfoJson = null;
   }
   return coinInfoJson;
@@ -41,41 +45,48 @@ const getCachedData = async (cacheId) =>{
 
 $(async () =>{
   try{
+    // Show loading spinner while fetching data
     $('.loading-spinner').show();
     cryptoCard = await $.get(cryptoCurrencyUrl);
+    // Create pagination for the fetched data
     createPaging();
+    // Show the first page
     paging(0);
     $('.loading-spinner').hide();
+    // Add event listener to search input
     $("#searchInput").on("input", searchInCryptoCards);
   }
   catch(e){
-    $('.loading-spinner').hide();
     console.error(e,"Error loading");
   }
 });
 
-
+// Function to retrieve additional information for a specific cryptocurrency and update its collapse card
 const getMoreCurrencyInfo = async (id, collapseCardId) => {
   try {
     const spinner = $('#' + collapseCardId).find('.spinner-border');
     const cryptoMoreInfo = $('#' + collapseCardId).find('.cryptoMoreInfo');
     cryptoMoreInfo.hide();
     spinner.show(); 
+    // check if the data is cached
     let coinInfo = await getCachedData(id);
     if (!coinInfo){
-      console.log("Not found in cache, so retrieving it from remote");
+      // if not cached, retrieve it from remote server
       coinInfo = await $.get(cardInfoUrl + id);
+      // cache the retrieved data
       setCachedData(id, coinInfo);
     }
 
     spinner.hide();
     cryptoMoreInfo.show();
+    // update the collapse card with the retrieved data
     updateCollapseCard(collapseCardId, coinInfo);
   } catch (error) {
     console.error(error);
   }
 };
 
+// Function to update the collapse card with the retrieved coin information
 const updateCollapseCard = (collapseCardId, coinInfo) => {
   const collapseCard = $("#" + collapseCardId);
   collapseCard.find("img").attr("src", coinInfo.image.small);
@@ -84,8 +95,12 @@ const updateCollapseCard = (collapseCardId, coinInfo) => {
   collapseCard.find(".ilsValue").html(coinInfo.market_data.current_price.ils);
 };
 
-
-
+/*
+This function adds or removes a coin from the compareList based on whether its checkbox is checked or unchecked.
+If the checkbox is unchecked, the coin is removed from the compareList.
+If the checkbox is checked, the coin is added to the compareList.
+If the compareList contains six coins, it calls createModalHtml() to create the comparison modal. 
+*/
 const addToCompareList = (coinSymbol, coinId, checkBox) => {
   if(!checkBox.checked){
     compareList = compareList.filter((coin) => coin.coinId !== coinId);
@@ -98,15 +113,23 @@ const addToCompareList = (coinSymbol, coinId, checkBox) => {
   }
 };
 
-
+/*
+This function cancels the replacing of a coin from the compareList.
+It removes all the elements from the uncheckCandidates array,
+and removes the last coin that was added to the compareList from both the compareList and the checkbox.
+*/
 const cancelReplacing = () =>{
   uncheckCandidates.splice(0, uncheckCandidates.length);
   const lastElement = compareList.pop();
-  console.log(compareList);
   $("#toggle" + lastElement.coinId).prop("checked", false);
 }
 
-
+/*
+This function replaces a coin from the compareList with another coin.
+If there are no coins in the uncheckCandidates array,
+it removes the last coin that was added to the compareList from both the compareList and the checkbox.
+If there are coins in the uncheckCandidates array, it removes those coins from the compareList and the checkboxes.
+*/
 const replaceCoin = () =>{
   if(uncheckCandidates.length === 0){
     const lastElement = compareList.pop();
@@ -116,12 +139,16 @@ const replaceCoin = () =>{
   uncheckCandidates.map((coinId) =>{
     compareList = compareList.filter((element) => element.coinId !== coinId);
     $("#toggle" + coinId).prop("checked", false)
-    console.log(compareList)
   });
   uncheckCandidates.splice(0, uncheckCandidates.length);
 }
 
-
+/* 
+This function is called when a user unchecks a checkbox in the compare list.
+It receives the target checkbox element as a parameter.
+If the checkbox is unchecked, add its id to the uncheckCandidates array.
+If the checkbox is checked again, remove its id from the uncheckCandidates array.
+*/
 const uncheckCoin = (target) =>{
   if(!target.checked){
     uncheckCandidates.push(target.id);
@@ -129,10 +156,12 @@ const uncheckCoin = (target) =>{
     return;
   } 
   uncheckCandidates.splice(uncheckCandidates.indexOf(target.id), 1)
-  console.log(uncheckCandidates);
 }
 
-
+/*
+ This function searches for a search term entered by the user in the search input field
+ that search the cards on the home page
+*/
 const searchInCryptoCards = () => {
   const searchTerm = $('#searchInput').val().toLowerCase();
   if (searchTerm === '') {
@@ -147,8 +176,10 @@ const searchInCryptoCards = () => {
   createCardData(searchResult);
 };
 
-
-
+/*
+This function handles pagination of the crypto cards by taking in the 
+current page index and context as parameters
+*/
 const paging = (index, context) => {
   if (context !== undefined) {
     const $currentPage = $(".page-index." + currentPage);
@@ -164,11 +195,12 @@ const paging = (index, context) => {
   if (startIndex < 0 || endIndex > cryptoCard.length) {
     return;
   }
+  // Creates a new array of the sliced crypto cards based on the start and end index
   const slicedCryptoCards = JSON.parse(JSON.stringify(cryptoCard.slice(startIndex, endIndex)))
   createCardData(slicedCryptoCards);
 }
 
-
+// This function creates paging for cryptoCard data.
 const createPaging = () =>{
   const pages = Math.ceil(cryptoCard.length/perPage);
   for(let pageIndex = 0; pageIndex < pages; pageIndex++){
@@ -182,7 +214,7 @@ const createPaging = () =>{
   paging(0, $(".page-index")[0]);
 };
 
-
+//this function creates cards element for the crypto data he requested from the api server
 const createCardData = (slicedCryptoCards) => {
   $("#cryptoCards").html("");
   const cardData = [];
@@ -230,7 +262,10 @@ const createCardData = (slicedCryptoCards) => {
   return cardData;
 };
 
-
+/*
+This is a function that returns a string of HTML elements for a collapsible card
+ that displays additional information about a cryptocurrency. 
+*/
 const getMoreCurrencyInfoCollapse = () => {
   return `
     <div class="cardCollapse">
@@ -253,7 +288,10 @@ const getMoreCurrencyInfoCollapse = () => {
   `;
 }
 
-
+/*
+this function call the modal html 
+if you have more the five items in the coins list
+*/
 const createModalHtml = () => {
   const compareModal = $("#myModal");
   let modalContent = document.createElement("div");

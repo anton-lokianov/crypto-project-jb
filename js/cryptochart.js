@@ -101,11 +101,3 @@ const displayLiveChart = async () => {
   saveCryptoLinkHashCode(cryptoLink);
   liveReportsInterval = setInterval(displayLiveChart, 2000);
 };
-
-function locationHashChanged() {
-  console.log(location.hash)
-}
-
-window.addEventListener('hashchange', () => {
-  console.log('The hash has changed!')
-}, false);
