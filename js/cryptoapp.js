@@ -12,39 +12,48 @@ let currentPage = 0;
 let cacheStorage = null;
 
 // Function to store data in cache
-const setCachedData = async (cacheId, coinInfo) =>{
-  if(!cacheStorage){
-    cacheStorage = await caches.open("cryptoInfo");
+const setCachedData = async (cacheId, coinInfo) => {
+  try {
+    if (!cacheStorage) {
+      cacheStorage = await caches.open("cryptoInfo");
+    }
+    // Add timestamp to the coinInfo object before storing in cache
+    coinInfo.timestamp = Date.now();
+    await cacheStorage.put(cacheId, new Response(JSON.stringify(coinInfo)));
+  } catch (e) {
+    console.error(e, "Error caching data");
   }
-  // Add timestamp to the coinInfo object before storing in cache
-  coinInfo.timestamp = Date.now();
-  await cacheStorage.put(cacheId, new Response(JSON.stringify(coinInfo)));
-}
+};
 
 // Function to retrieve data from cache
-const getCachedData = async (cacheId) =>{
-  if(!cacheStorage){
-    cacheStorage = await caches.open("cryptoInfo");
-  }
+const getCachedData = async (cacheId) => {
+  try {
+    if (!cacheStorage) {
+      cacheStorage = await caches.open("cryptoInfo");
+    }
 
-  const coinInfo = await cacheStorage.match(cacheId);
-  if(!coinInfo){
+    const coinInfo = await cacheStorage.match(cacheId);
+    if (!coinInfo) {
+      return null;
+    }
+
+    // Parse the cached data and calculate the time elapsed since it was cached
+    const coinInfoJson = await coinInfo.json();
+    const timeElapsed = (Date.now() - coinInfoJson.timestamp) / 1000;
+    if (timeElapsed > 120) {
+      // Delete the cached data if it has been more than 120 seconds
+      cacheStorage.delete(cacheId);
+      return null;
+    }
+    return coinInfoJson;
+  } catch (e) {
+    console.error(e, "Error retrieving cached data");
     return null;
   }
-  
-  // Parse the cached data and calculate the time elapsed since it was cached
-  const coinInfoJson = await coinInfo.json();
-  const timeElapsed = (Date.now() - coinInfoJson.timestamp) / 1000;
-  if (timeElapsed > 120){
-    // Delete the cached data if it has been more than 120 seconds
-    cacheStorage.delete(coinInfoJson);
-    coinInfoJson = null;
-  }
-  return coinInfoJson;
-}
+};
 
-$(async () =>{
-  try{
+$(async () => {
+  try {
     // Show loading spinner while fetching data
     $('.loading-spinner').show();
     cryptoCard = await $.get(cryptoCurrencyUrl);
@@ -55,11 +64,11 @@ $(async () =>{
     $('.loading-spinner').hide();
     // Add event listener to search input
     $("#searchInput").on("input", searchInCryptoCards);
-  }
-  catch(e){
-    console.error(e,"Error loading");
+  } catch (e) {
+    console.error(e, "Error loading");
   }
 });
+
 
 // Function to retrieve additional information for a specific cryptocurrency and update its collapse card
 const getMoreCurrencyInfo = async (id, collapseCardId) => {
